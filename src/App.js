@@ -10,6 +10,6 @@ export default function App() {
         <Route exact path="/" component={ Login } />
         <Route path="/config" component={ Config } />
       </Switch>
-    </div>// apagar comentario
+    </div>
   );
 }
