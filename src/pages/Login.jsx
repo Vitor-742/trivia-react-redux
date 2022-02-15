@@ -1,8 +1,8 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { dataLogin, tokenLogin } from '../store/actions';
+import { dataLogin, tokenLogin, loginAction } from '../store/actions';
 
 class Login extends React.Component {
   constructor() {
@@ -28,9 +28,10 @@ class Login extends React.Component {
   }
 
   handleClick = () => {
-    const { loginToken, loginData } = this.props;
+    const { loginToken, loginData, getEmail } = this.props;
     const { emailLogin, usernameLogin } = this.state;
     const dados = { emailLogin, usernameLogin };
+    getEmail({ usernameLogin, emailLogin });
     fetch('https://opentdb.com/api_token.php?command=request')
       .then((response) => response.json())
       .then((data) => {
@@ -44,18 +45,26 @@ class Login extends React.Component {
     const { btnEnable } = this.state;
     return (
       <div>
-        <input
-          type="text"
-          data-testid="input-player-name"
-          name="usernameLogin"
-          onChange={ this.handleChange }
-        />
-        <input
-          type="text"
-          data-testid="input-gravatar-email"
-          name="emailLogin"
-          onChange={ this.handleChange }
-        />
+        <label htmlFor="userName">
+          Nome:
+          <input
+            id="userName"
+            type="text"
+            data-testid="input-player-name"
+            name="usernameLogin"
+            onChange={ this.handleChange }
+          />
+        </label>
+        <label htmlFor="emailLogin">
+          Email:
+          <input
+            id="emailLogin"
+            type="text"
+            data-testid="input-gravatar-email"
+            name="emailLogin"
+            onChange={ this.handleChange }
+          />
+        </label>
         <Link to="/Game">
           <button
             type="button"
@@ -79,11 +88,13 @@ class Login extends React.Component {
 const mapDispatchToProps = (dispatch) => ({
   loginToken: (token) => dispatch(tokenLogin(token)),
   loginData: (dados) => dispatch(dataLogin(dados)),
+  getEmail: (payload) => dispatch(loginAction(payload)),
 });
 
 Login.propTypes = {
   loginToken: PropTypes.func,
   loginData: PropTypes.func,
+  getEmail: PropTypes.func,
 }.isRequired;
 
 export default connect(null, mapDispatchToProps)(Login);
