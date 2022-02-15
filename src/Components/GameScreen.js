@@ -4,11 +4,16 @@ import { connect } from 'react-redux';
 import { fetchQuestionsApi } from '../services/triviaApi';
 import Loading from './Loading';
 
+const NUMBER_RANDOM = 0.5;
+const RESPONSE_CODE = 3;
+
 class GameScreen extends React.Component {
   constructor() {
     super();
     this.state = {
-      questions: [],
+      Allquestions: [],
+      numberQuestion: 0,
+      answers: [],
       loading: true,
     };
   }
@@ -20,32 +25,53 @@ class GameScreen extends React.Component {
   getQuestionsApi = async () => {
     const { tokenState } = this.props;
     const questionsReturn = await fetchQuestionsApi(tokenState);
-    this.setState({
-      questions: questionsReturn.results,
-      loading: false,
-    });
+    if (questionsReturn.response_code !== RESPONSE_CODE) {
+      // Coloca todas as respostas em um único Array;
+      const allAnswers = [
+        questionsReturn.results[0].correct_answer,
+        ...questionsReturn.results[0].incorrect_answers];
+      const answersWithDataTestId = [];
+      // Coloca todas as respostas com seu respectivo DataTestId em um Array para criar o Random;
+      allAnswers.map((answer, index) => {
+        if (index === 0) {
+          answersWithDataTestId.push({ answer, dataTestId: 'correct-answer' });
+          return answersWithDataTestId;
+        }
+        answersWithDataTestId.push({ answer, dataTestId: `answer-${index}` });
+        return answersWithDataTestId;
+      });
+      // Embaralha o conteúdo do array de respostas
+      // Parte do código retirado de: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+      const randomAnswers = answersWithDataTestId.sort(
+        () => Math.random() - NUMBER_RANDOM,
+      );
+      this.setState({
+        Allquestions: questionsReturn.results,
+        answers: randomAnswers,
+        loading: false,
+      });
+    } else {
+      console.log('CHAMA NOVAMENTE A API PRA GERAR O TOKEN');
+    }
   }
 
   render() {
-    const { questions, loading } = this.state;
+    const { Allquestions, numberQuestion, loading, answers } = this.state;
+
     return (
       <main>
         {loading ? <Loading /> : (
           <div>
-            <h2 data-testid="question-category">{questions[0].category}</h2>
-            <h1 data-testid="question-text">{questions[0].question}</h1>
+            <h2 data-testid="question-category">
+              {Allquestions[numberQuestion].category}
+            </h2>
+            <h1 data-testid="question-text">{Allquestions[numberQuestion].question}</h1>
             <section data-testid="answer-options">
-              <button
-                data-testid="correct-answer"
-                type="button"
-              >
-                {questions[0].correct_answer}
-              </button>
-              {questions[0].incorrect_answers.map((answer, index) => (
+              {answers.map(({ answer, dataTestId }) => (
                 <button
                   type="button"
                   key={ answer }
-                  data-testid={ `answer-${index}` }
+                  data-testid={ dataTestId }
                 >
                   {answer}
                 </button>))}
