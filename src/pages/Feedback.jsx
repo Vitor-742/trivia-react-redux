@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import md5 from 'crypto-js/md5';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const ACERTOS_MINIMOS = 3;
 
@@ -48,6 +49,9 @@ class Feedback extends React.Component {
           <p data-testid="feedback-total-score">{score}</p>
           <p data-testid="feedback-total-question">{assertions}</p>
         </section>
+        <Link to="/">
+          <button type="button" data-testid="btn-play-again">Play Again</button>
+        </Link>
       </div>
     );
   }
