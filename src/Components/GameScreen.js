@@ -37,7 +37,7 @@ class GameScreen extends React.Component {
       // Coloca todas as respostas com seu respectivo DataTestId em um Array para criar o Random;
       allAnswers.map((answer, index) => {
         if (index === 0) {
-          answersWithDataTestId.push({ answer, dataTestId: 'correct-answer' });
+          answersWithDataTestId.push({ answer, dataTestId: "correct-answer" });
           return answersWithDataTestId;
         }
         answersWithDataTestId.push({ answer, dataTestId: `wrong-answer-${index - 1}` });
