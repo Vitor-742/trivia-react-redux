@@ -2,7 +2,7 @@ import React from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchQuestionsApi } from '../services/triviaApi';
-import Loading from './Loading';
+// import Loading from './Loading';
 
 const NUMBER_RANDOM = 0.5;
 const RESPONSE_CODE = 3;
@@ -14,7 +14,8 @@ class GameScreen extends React.Component {
       Allquestions: [],
       numberQuestion: 0,
       answers: [],
-      loading: true,
+      // loading: true,
+      isFetching: false,
     };
   }
 
@@ -37,7 +38,7 @@ class GameScreen extends React.Component {
           answersWithDataTestId.push({ answer, dataTestId: 'correct-answer' });
           return answersWithDataTestId;
         }
-        answersWithDataTestId.push({ answer, dataTestId: `answer-${index}` });
+        answersWithDataTestId.push({ answer, dataTestId: `wrong-answer-${index - 1}` });
         return answersWithDataTestId;
       });
       // Embaralha o conteúdo do array de respostas
@@ -48,7 +49,8 @@ class GameScreen extends React.Component {
       this.setState({
         Allquestions: questionsReturn.results,
         answers: randomAnswers,
-        loading: false,
+        // loading: false,
+        isFetching: true,
       });
     } else {
       console.log('CHAMA NOVAMENTE A API PRA GERAR O TOKEN');
@@ -56,10 +58,10 @@ class GameScreen extends React.Component {
   }
 
   render() {
-    const { Allquestions, numberQuestion, loading, answers } = this.state;
+    const { Allquestions, numberQuestion, isFetching, answers } = this.state;
     return (
       <main>
-        {loading ? <Loading /> : (
+        {isFetching && (
           <div>
             <h2 data-testid="question-category">
               {Allquestions[numberQuestion].category}
