@@ -2,11 +2,28 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 class Feedback extends React.Component {
+    constructor() {
+        super()
+        this.state = {
+            loading: false
+        }
+    }
+
+    componentDidMount() {
+        retornaAvatar()
+    }
+
+    retornaAvatar() {
+
+    }
+
   render() {
-    console.log(playerData);
+    const { player: { name, assertions, score, gravatarEmail } } = this.props;
     return (
       <div>
-        <header />
+        <header>
+          <img src={}
+        </header>
       </div>
     );
   }
