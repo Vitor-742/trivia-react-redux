@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { dataLogin, tokenLogin } from '../store/actions';
 import { fetchTokenApi } from '../services/triviaApi';
 
+
 class Login extends React.Component {
   constructor() {
     super();
@@ -36,6 +37,18 @@ class Login extends React.Component {
     localStorage.setItem('token', tokenApi.token);
     loginToken(tokenApi.token);
     loginData(dados);
+//   handleClick = () => {
+//     const { loginToken, loginData } = this.props;
+//     const { emailLogin, usernameLogin } = this.state;
+//     const dados = { emailLogin, usernameLogin };
+//     fetch('https://opentdb.com/api_token.php?command=request')
+//       .then((response) => response.json())
+//       .then((data) => {
+//         localStorage.setItem('token', data.token);
+//         loginToken(data.token);
+//         loginData(dados);
+//       });
+// >>>>>>> main-group-25
   }
 
   render() {
