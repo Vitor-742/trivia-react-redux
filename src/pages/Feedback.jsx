@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import md5 from 'crypto-js/md5';
 import PropTypes from 'prop-types';
 
+const ACERTOS_MINIMOS = 3;
+
 class Feedback extends React.Component {
   constructor() {
     super();
@@ -25,7 +27,7 @@ class Feedback extends React.Component {
   }
 
   render() {
-    const { playerData: { name, /* assertions, */ score } } = this.props;
+    const { playerData: { name, assertions, score } } = this.props;
     const { loading, srcGravatar } = this.state;
     return (
       <div>
@@ -38,6 +40,9 @@ class Feedback extends React.Component {
             />)}
           <h2 data-testid="header-player-name">{name}</h2>
           <p data-testid="header-score">{score}</p>
+          <p data-testid="feedback-text">
+            {assertions >= ACERTOS_MINIMOS ? 'Well Done!' : 'Could be better...'}
+          </p>
         </header>
       </div>
     );
