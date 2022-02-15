@@ -1,7 +1,8 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { fetchQuestionsApi } from '../services/triviaApi';
+import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
+import { tokenLogin } from '../store/actions';
 // import Loading from './Loading';
 
 const NUMBER_RANDOM = 0.5;
@@ -26,6 +27,7 @@ class GameScreen extends React.Component {
   getQuestionsApi = async () => {
     const { tokenState } = this.props;
     const questionsReturn = await fetchQuestionsApi(tokenState);
+    console.log(questionsReturn);
     if (questionsReturn.response_code !== RESPONSE_CODE) {
       // Coloca todas as respostas em um único Array;
       const allAnswers = [
@@ -53,7 +55,11 @@ class GameScreen extends React.Component {
         isFetching: true,
       });
     } else {
-      console.log('CHAMA NOVAMENTE A API PRA GERAR O TOKEN');
+      const tokenApi = await fetchTokenApi();
+      const { loginToken } = this.props;
+      localStorage.setItem('token', tokenApi.token);
+      loginToken(tokenApi.token);
+      this.getQuestionsApi();
     }
   }
 
@@ -86,10 +92,15 @@ class GameScreen extends React.Component {
 
 GameScreen.propTypes = {
   tokenState: propTypes.string,
+  loginToken: propTypes.func,
 }.isRequired;
+
+const mapDispatchToProps = (dispatch) => ({
+  loginToken: (token) => dispatch(tokenLogin(token)),
+});
 
 const mapStateToProps = (state) => ({
   tokenState: state.token,
 });
 
-export default connect(mapStateToProps)(GameScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(GameScreen);
