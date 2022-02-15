@@ -1,5 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { dataLogin, tokenLogin } from '../store/actions';
 
 class Login extends React.Component {
   constructor() {
@@ -24,10 +27,17 @@ class Login extends React.Component {
     });
   }
 
-  handleClick() {
+  handleClick = () => {
+    const { loginToken, loginData } = this.props;
+    const { emailLogin, usernameLogin } = this.state;
+    const dados = { emailLogin, usernameLogin };
     fetch('https://opentdb.com/api_token.php?command=request')
       .then((response) => response.json())
-      .then((data) => localStorage.setItem('token', data.token));
+      .then((data) => {
+        localStorage.setItem('token', data.token);
+        loginToken(data.token);
+        loginData(dados);
+      });
   }
 
   render() {
@@ -66,4 +76,14 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+const mapDispatchToProps = (dispatch) => ({
+  loginToken: (token) => dispatch(tokenLogin(token)),
+  loginData: (dados) => dispatch(dataLogin(dados)),
+});
+
+Login.propTypes = {
+  loginToken: PropTypes.func,
+  loginData: PropTypes.func,
+}.isRequired;
+
+export default connect(null, mapDispatchToProps)(Login);
