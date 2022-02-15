@@ -8,7 +8,6 @@ class Game extends React.Component {
         <Header />
       </div>
     );
-
   }
 }
 

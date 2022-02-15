@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -32,7 +31,7 @@ class Login extends React.Component {
     const { loginToken, loginData, getEmail } = this.props;
     const { emailLogin, usernameLogin } = this.state;
     const dados = { emailLogin, usernameLogin };
-    getEmail({usernameLogin, emailLogin});
+    getEmail({ usernameLogin, emailLogin });
     fetch('https://opentdb.com/api_token.php?command=request')
       .then((response) => response.json())
       .then((data) => {
@@ -46,25 +45,25 @@ class Login extends React.Component {
     const { btnEnable } = this.state;
     return (
       <div>
-        <label htmlFor='userName'>
+        <label htmlFor="userName">
           Nome:
-        <input
-          id="userName"
-          type="text"
-          data-testid="input-player-name"
-          name="usernameLogin"
-          onChange={ this.handleChange }
-        />
+          <input
+            id="userName"
+            type="text"
+            data-testid="input-player-name"
+            name="usernameLogin"
+            onChange={ this.handleChange }
+          />
         </label>
         <label htmlFor="emailLogin">
           Email:
-        <input
-          id="emailLogin"
-          type="text"
-          data-testid="input-gravatar-email"
-          name="emailLogin"
-          onChange={ this.handleChange }
-        />
+          <input
+            id="emailLogin"
+            type="text"
+            data-testid="input-gravatar-email"
+            name="emailLogin"
+            onChange={ this.handleChange }
+          />
         </label>
         <Link to="/Game">
           <button
@@ -89,7 +88,7 @@ class Login extends React.Component {
 const mapDispatchToProps = (dispatch) => ({
   loginToken: (token) => dispatch(tokenLogin(token)),
   loginData: (dados) => dispatch(dataLogin(dados)),
-  getEmail: (payload)=> dispatch(loginAction(payload)),
+  getEmail: (payload) => dispatch(loginAction(payload)),
 });
 
 Login.propTypes = {
