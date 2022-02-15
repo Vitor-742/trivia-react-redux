@@ -1,7 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { loginAction } from '../store/actions';
+import PropTypes from 'prop-types';
+import { dataLogin, tokenLogin, loginAction } from '../store/actions';
 
 class Login extends React.Component {
   constructor() {
@@ -27,12 +29,17 @@ class Login extends React.Component {
   }
 
   handleClick = () => {
+    const { loginToken, loginData, getEmail } = this.props;
+    const { emailLogin, usernameLogin } = this.state;
+    const dados = { emailLogin, usernameLogin };
+    getEmail({usernameLogin, emailLogin});
     fetch('https://opentdb.com/api_token.php?command=request')
       .then((response) => response.json())
-      .then((data) => localStorage.setItem('token', data.token));
-      const { getEmail } = this.props;
-      const { usernameLogin, emailLogin } = this.state;
-      getEmail({usernameLogin, emailLogin});
+      .then((data) => {
+        localStorage.setItem('token', data.token);
+        loginToken(data.token);
+        loginData(dados);
+      });
   }
 
   render() {
@@ -79,10 +86,16 @@ class Login extends React.Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getEmail: (payload)=> dispatch(loginAction(payload))
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  loginToken: (token) => dispatch(tokenLogin(token)),
+  loginData: (dados) => dispatch(dataLogin(dados)),
+  getEmail: (payload)=> dispatch(loginAction(payload)),
+});
+
+Login.propTypes = {
+  loginToken: PropTypes.func,
+  loginData: PropTypes.func,
+  getEmail: PropTypes.func,
+}.isRequired;
 
 export default connect(null, mapDispatchToProps)(Login);
