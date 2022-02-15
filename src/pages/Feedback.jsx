@@ -44,6 +44,10 @@ class Feedback extends React.Component {
             {assertions >= ACERTOS_MINIMOS ? 'Well Done!' : 'Could be better...'}
           </p>
         </header>
+        <section>
+          <p data-testid="feedback-total-score">{score}</p>
+          <p data-testid="feedback-total-question">{assertions}</p>
+        </section>
       </div>
     );
   }
