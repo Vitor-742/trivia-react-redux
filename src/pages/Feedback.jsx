@@ -1,28 +1,43 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import md5 from 'crypto-js/md5';
+import PropTypes from 'prop-types';
 
 class Feedback extends React.Component {
-    constructor() {
-        super()
-        this.state = {
-            loading: false
-        }
-    }
+  constructor() {
+    super();
+    this.state = {
+      loading: false,
+    };
+  }
 
-    componentDidMount() {
-        retornaAvatar()
-    }
+  componentDidMount() {
+    this.retornaAvatar();
+  }
 
-    retornaAvatar() {
-
-    }
+  retornaAvatar = () => {
+    const { playerData: { gravatarEmail } } = this.props;
+    const cryptoGravatar = md5(gravatarEmail).toString();
+    this.setState({
+      srcGravatar: `https://www.gravatar.com/avatar/${cryptoGravatar}`,
+      loading: true,
+    });
+  }
 
   render() {
-    const { player: { name, assertions, score, gravatarEmail } } = this.props;
+    const { playerData: { name, /* assertions, */ score } } = this.props;
+    const { loading, srcGravatar } = this.state;
     return (
       <div>
         <header>
-          <img src={}
+          {loading && (
+            <img
+              src={ srcGravatar }
+              alt="foto de perfil"
+              data-testid="header-profile-picture"
+            />)}
+          <h2 data-testid="header-player-name">{name}</h2>
+          <p data-testid="header-score">{score}</p>
         </header>
       </div>
     );
@@ -32,5 +47,9 @@ class Feedback extends React.Component {
 const mapStateToProps = (state) => ({
   playerData: state.player,
 });
+
+Feedback.propTypes = {
+  playerData: PropTypes.shape,
+}.isRequired;
 
 export default connect(mapStateToProps)(Feedback);
