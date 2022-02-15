@@ -57,7 +57,6 @@ class GameScreen extends React.Component {
 
   render() {
     const { Allquestions, numberQuestion, loading, answers } = this.state;
-
     return (
       <main>
         {loading ? <Loading /> : (

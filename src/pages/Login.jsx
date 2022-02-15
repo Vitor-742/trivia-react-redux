@@ -36,6 +36,13 @@ class Login extends React.Component {
     localStorage.setItem('token', tokenApi.token);
     loginToken(tokenApi.token);
     loginData(dados);
+    // fetch('https://opentdb.com/api_token.php?command=request')
+    // .then((response) => response.json())
+    // .then((data) => {
+    //   localStorage.setItem('token', data.token);
+    //   loginToken(data.token);
+    //   loginData(dados);
+    // });
   }
 
   render() {
