@@ -73,16 +73,16 @@ class GameScreen extends React.Component {
               {Allquestions[numberQuestion].category}
             </h2>
             <h1 data-testid="question-text">{Allquestions[numberQuestion].question}</h1>
-            <section data-testid="answer-options">
-              {answers.map(({ answer, dataTestId }) => (
+            <div data-testid="answer-options">
+              {answers.map(({ answer, dataTestId }, index) => (
                 <button
                   type="button"
-                  key={ answer }
+                  key={ index }
                   data-testid={ dataTestId }
                 >
                   {answer}
                 </button>))}
-            </section>
+            </div>
           </div>
         )}
       </main>
