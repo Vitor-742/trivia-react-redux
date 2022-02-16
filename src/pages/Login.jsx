@@ -1,9 +1,9 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { dataLogin, tokenLogin } from '../store/actions';
-import { fetchTokenApi } from '../services/triviaApi';
+// import { fetchTokenApi } from '../services/triviaApi';
+import { dataLogin, tokenLogin, loginAction } from '../store/actions';
 
 class Login extends React.Component {
   constructor() {
@@ -28,49 +28,53 @@ class Login extends React.Component {
     });
   }
 
-  handleClick = async () => {
-    const { loginToken, loginData } = this.props;
+  handleClick = () => {
+    const { loginToken, loginData, getEmail, history } = this.props;
     const { emailLogin, usernameLogin } = this.state;
     const dados = { emailLogin, usernameLogin };
-    const tokenApi = await fetchTokenApi();
-    localStorage.setItem('token', tokenApi.token);
-    loginToken(tokenApi.token);
-    loginData(dados);
-    // fetch('https://opentdb.com/api_token.php?command=request')
-    // .then((response) => response.json())
-    // .then((data) => {
-    //   localStorage.setItem('token', data.token);
-    //   loginToken(data.token);
-    //   loginData(dados);
-    // });
+    getEmail({ usernameLogin, emailLogin });
+    fetch('https://opentdb.com/api_token.php?command=request')
+      .then((response) => response.json())
+      .then((data) => {
+        localStorage.setItem('token', data.token);
+        loginToken(data.token);
+        loginData(dados);
+        history.push('/Game');// apagar comentario
+      });
   }
 
   render() {
     const { btnEnable } = this.state;
     return (
       <div>
-        <input
-          type="text"
-          data-testid="input-player-name"
-          name="usernameLogin"
-          onChange={ this.handleChange }
-        />
-        <input
-          type="text"
-          data-testid="input-gravatar-email"
-          name="emailLogin"
-          onChange={ this.handleChange }
-        />
-        <Link to="/Game">
-          <button
-            type="button"
-            disabled={ !btnEnable }
-            data-testid="btn-play"
-            onClick={ this.handleClick }
-          >
-            Play
-          </button>
-        </Link>
+        <label htmlFor="userName">
+          Nome:
+          <input
+            id="userName"
+            type="text"
+            data-testid="input-player-name"
+            name="usernameLogin"
+            onChange={ this.handleChange }
+          />
+        </label>
+        <label htmlFor="emailLogin">
+          Email:
+          <input
+            id="emailLogin"
+            type="text"
+            data-testid="input-gravatar-email"
+            name="emailLogin"
+            onChange={ this.handleChange }
+          />
+        </label>
+        <button
+          type="button"
+          disabled={ !btnEnable }
+          data-testid="btn-play"
+          onClick={ this.handleClick }
+        >
+          Play
+        </button>
         <Link to="/config">
           <button type="button" data-testid="btn-settings">
             Configurações
@@ -84,11 +88,13 @@ class Login extends React.Component {
 const mapDispatchToProps = (dispatch) => ({
   loginToken: (token) => dispatch(tokenLogin(token)),
   loginData: (dados) => dispatch(dataLogin(dados)),
+  getEmail: (payload) => dispatch(loginAction(payload)),
 });
 
 Login.propTypes = {
   loginToken: PropTypes.func,
   loginData: PropTypes.func,
+  getEmail: PropTypes.func,
 }.isRequired;
 
 export default connect(null, mapDispatchToProps)(Login);
