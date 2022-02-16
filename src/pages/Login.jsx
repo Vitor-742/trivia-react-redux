@@ -39,7 +39,7 @@ class Login extends React.Component {
         localStorage.setItem('token', data.token);
         loginToken(data.token);
         loginData(dados);
-        history.push('/Game');// apagar comentario
+        history.push('/Game');
       });
   }
 
