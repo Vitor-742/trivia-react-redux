@@ -93,7 +93,8 @@ class GameScreen extends React.Component {
       const hash = md5(login.email).toString();
       const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
       const dataPlayer = JSON.stringify(
-        [ { name: login.nome, score: sumScore, url: urlPhoto } ]);
+        [ { name: login.nome, score: sumScore, url: urlPhoto } ]
+      );
       localStorage.setItem('ranking', dataPlayer);
     }
     this.setState({
