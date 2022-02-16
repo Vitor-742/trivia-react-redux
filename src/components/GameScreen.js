@@ -91,24 +91,24 @@ class GameScreen extends React.Component {
       <main>
         {isFetching && (
           isAnswer ? <AnswerScreen /> : (
-        <div>
-          <h2 data-testid="question-category">
-            {Allquestions[numberQuestion].category}
-          </h2>
-          <h1 data-testid="question-text">{Allquestions[numberQuestion].question}</h1>
-          <div data-testid="answer-options">
-            {answers.map(({ answer, dataTestId }, index) => (
-              <button
-                type="button"
-                key={ index }
-                data-testid={ dataTestId }
-                onClick={ this.btnClickAnswer }
-              >
-                {answer}
-              </button>))}
-          </div>
-        </div>
-        ))}
+            <div>
+              <h2 data-testid="question-category">
+                {Allquestions[numberQuestion].category}
+              </h2>
+              <h1 data-testid="question-text">{Allquestions[numberQuestion].question}</h1>
+              <div data-testid="answer-options">
+                {answers.map(({ answer, dataTestId }, index) => (
+                  <button
+                    type="button"
+                    key={ index }
+                    data-testid={ dataTestId }
+                    onClick={ this.btnClickAnswer }
+                  >
+                    {answer}
+                  </button>))}
+              </div>
+            </div>
+          ))}
       </main>
     );
   }

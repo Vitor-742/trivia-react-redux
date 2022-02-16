@@ -32,24 +32,24 @@ class AnswerScreen extends React.Component {
     return (
       <main>
         {isFetching && (
-      <div>
-        <h2 data-testid="question-category">
-          {questionState.question.category}
-        </h2>
-        <h1 data-testid="question-text">{questionState.question.question}</h1>
-        <div data-testid="answer-options">
-          {questionState.answers.map(({ answer, dataTestId, className }, index) => (
-            <button
-              type="button"
-              key={ index }
-              data-testid={ dataTestId }
-              className={ className }
-              // onClick= { this.btnClickAnswer }
-            >
-              {answer}
-            </button>))}
-        </div>
-        </div>
+          <div>
+            <h2 data-testid="question-category">
+              {questionState.question.category}
+            </h2>
+            <h1 data-testid="question-text">{questionState.question.question}</h1>
+            <div data-testid="answer-options">
+              {questionState.answers.map(({ answer, dataTestId, className }, index) => (
+                <button
+                  type="button"
+                  key={ index }
+                  data-testid={ dataTestId }
+                  className={ className }
+                  // onClick= { this.btnClickAnswer }
+                >
+                  {answer}
+                </button>))}
+            </div>
+          </div>
         )}
       </main>
     );
