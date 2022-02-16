@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
 import { tokenLogin, dataQuestions } from '../store/actions';
 import AnswerScreen from './AnswerScreen';
+import md5 from 'crypto-js/md5';
 // import Loading from './Loading';
 
 const NUMBER_RANDOM = 0.5;
 const RESPONSE_CODE = 3;
+const POINTS_DIFFICULTY = {hard: 3, medium: 2, easy: 1};
 
 class GameScreen extends React.Component {
   constructor() {
@@ -79,7 +81,18 @@ class GameScreen extends React.Component {
     }
   }
 
-  btnClickAnswer = () => {
+  btnClickAnswer = ({ target }) => {
+    // Simulação do Timer do Requisito 8;
+    const setTimer = 17;
+    // ^^^^^^^^^^^^^^^^^^
+    const { question, login } = this.props;
+    if(target.name === 'correct-answer') {
+      const sumScore = 10 + (setTimer * POINTS_DIFFICULTY[question.difficulty]); 
+      const hash = md5(login.email).toString();
+      const urlPhoto = `https://www.gravatar.com/avatar/${hash}`
+      const dataPlayer = JSON.stringify([{name: login.nome, score: sumScore, url: urlPhoto}]) 
+      localStorage.setItem('ranking', dataPlayer);
+    }
     this.setState({
       isAnswer: true,
     });
@@ -101,6 +114,7 @@ class GameScreen extends React.Component {
                   <button
                     type="button"
                     key={ index }
+                    name={ dataTestId }
                     data-testid={ dataTestId }
                     onClick={ this.btnClickAnswer }
                   >
@@ -127,6 +141,9 @@ const mapDispatchToProps = (dispatch) => ({
 
 const mapStateToProps = (state) => ({
   tokenState: state.token,
+  question: state.questionsReducer.question,
+  // player: state.player,
+  login: state.login,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameScreen);
