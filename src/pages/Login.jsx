@@ -61,7 +61,7 @@ class Login extends React.Component {
           name="emailLogin"
           onChange={ this.handleChange }
         />
-        <Link to="/Game">
+        <Link to="/game">
           <button
             type="button"
             disabled={ !btnEnable }

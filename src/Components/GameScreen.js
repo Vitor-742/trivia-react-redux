@@ -2,7 +2,8 @@ import React from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
-import { tokenLogin } from '../store/actions';
+import { tokenLogin, dataQuestions } from '../store/actions';
+import AnswerScreen from './AnswerScreen';
 // import Loading from './Loading';
 
 const NUMBER_RANDOM = 0.5;
@@ -17,6 +18,7 @@ class GameScreen extends React.Component {
       answers: [],
       // loading: true,
       isFetching: false,
+      isAnswer: false,
     };
   }
 
@@ -25,22 +27,31 @@ class GameScreen extends React.Component {
   }
 
   getQuestionsApi = async () => {
-    const { tokenState } = this.props;
+    const { tokenState, inputQuestionsStore } = this.props;
+    const { numberQuestion } = this.state;
     const questionsReturn = await fetchQuestionsApi(tokenState);
     // Se o TOKEN expirar, a API retorna um RESPONSE_CODE = 3 -> no else é solicitando um novo TOKEN
     if (questionsReturn.response_code !== RESPONSE_CODE) {
       // Coloca todas as respostas em um único Array;
       const allAnswers = [
-        questionsReturn.results[0].correct_answer,
-        ...questionsReturn.results[0].incorrect_answers];
+        questionsReturn.results[numberQuestion].correct_answer,
+        ...questionsReturn.results[numberQuestion].incorrect_answers];
       const answersWithDataTestId = [];
       // Coloca todas as respostas com seu respectivo DataTestId em um Array para criar o Random;
       allAnswers.map((answer, index) => {
         if (index === 0) {
-          answersWithDataTestId.push({ answer, dataTestId: 'correct-answer' });
+          answersWithDataTestId.push({
+            answer, 
+            dataTestId: 'correct-answer',
+            className: 'correct-answer',
+          });
           return answersWithDataTestId;
         }
-        answersWithDataTestId.push({ answer, dataTestId: `wrong-answer-${index - 1}` });
+        answersWithDataTestId.push({
+          answer,
+          dataTestId: `wrong-answer-${index - 1}`,
+          className: 'wrong-answer',
+        });
         return answersWithDataTestId;
       });
       // Embaralha o conteúdo do array de respostas
@@ -48,6 +59,12 @@ class GameScreen extends React.Component {
       const randomAnswers = answersWithDataTestId.sort(
         () => Math.random() - NUMBER_RANDOM,
       );
+      // Envia pra Store a pergunta, o número dela e as respostas desordenadas;
+      inputQuestionsStore({
+        question: questionsReturn.results[numberQuestion],
+        number: numberQuestion,
+        answers: randomAnswers,
+      });
       this.setState({
         Allquestions: questionsReturn.results,
         answers: randomAnswers,
@@ -62,12 +79,19 @@ class GameScreen extends React.Component {
       this.getQuestionsApi();
     }
   }
+  
+  btnClickAnswer = () => {
+    this.setState({
+      isAnswer: true,
+    });
+  }
 
   render() {
-    const { Allquestions, numberQuestion, isFetching, answers } = this.state;
+    const { Allquestions, numberQuestion, isFetching, answers, isAnswer } = this.state;
     return (
       <main>
         {isFetching && (
+          isAnswer ? <AnswerScreen /> : 
           <div>
             <h2 data-testid="question-category">
               {Allquestions[numberQuestion].category}
@@ -79,6 +103,7 @@ class GameScreen extends React.Component {
                   type="button"
                   key={ index }
                   data-testid={ dataTestId }
+                  onClick= { this.btnClickAnswer }
                 >
                   {answer}
                 </button>))}
@@ -93,10 +118,12 @@ class GameScreen extends React.Component {
 GameScreen.propTypes = {
   tokenState: propTypes.string,
   loginToken: propTypes.func,
+  inputQuestionsStore: propTypes.func,
 }.isRequired;
 
 const mapDispatchToProps = (dispatch) => ({
   loginToken: (token) => dispatch(tokenLogin(token)),
+  inputQuestionsStore: (questionsApi) => dispatch(dataQuestions(questionsApi)), 
 });
 
 const mapStateToProps = (state) => ({
