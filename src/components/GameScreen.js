@@ -1,15 +1,17 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
+import md5 from 'crypto-js/md5';
 import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
 import { tokenLogin, dataQuestions } from '../store/actions';
 import AnswerScreen from './AnswerScreen';
-import md5 from 'crypto-js/md5';
 // import Loading from './Loading';
 
 const NUMBER_RANDOM = 0.5;
 const RESPONSE_CODE = 3;
-const POINTS_DIFFICULTY = {hard: 3, medium: 2, easy: 1};
+const POINTS_DIFFICULTY = { hard: 3, medium: 2, easy: 1 };
+const CORRECT_ANSWER = 'correct-answer';
+const NUMBER_TEN = 10;
 
 class GameScreen extends React.Component {
   constructor() {
@@ -44,8 +46,8 @@ class GameScreen extends React.Component {
         if (index === 0) {
           answersWithDataTestId.push({
             answer,
-            dataTestId: 'correct-answer',
-            className: 'correct-answer',
+            dataTestId: CORRECT_ANSWER,
+            className: CORRECT_ANSWER,
           });
           return answersWithDataTestId;
         }
@@ -86,11 +88,12 @@ class GameScreen extends React.Component {
     const setTimer = 17;
     // ^^^^^^^^^^^^^^^^^^
     const { question, login } = this.props;
-    if(target.name === 'correct-answer') {
-      const sumScore = 10 + (setTimer * POINTS_DIFFICULTY[question.difficulty]); 
+    if (target.name === CORRECT_ANSWER) {
+      const sumScore = NUMBER_TEN + (setTimer * POINTS_DIFFICULTY[question.difficulty]);
       const hash = md5(login.email).toString();
-      const urlPhoto = `https://www.gravatar.com/avatar/${hash}`
-      const dataPlayer = JSON.stringify([{name: login.nome, score: sumScore, url: urlPhoto}]) 
+      const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
+      const dataPlayer = JSON.stringify(
+        [ { name: login.nome, score: sumScore, url: urlPhoto } ]);
       localStorage.setItem('ranking', dataPlayer);
     }
     this.setState({
