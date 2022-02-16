@@ -20,19 +20,12 @@ class AnswerScreen extends React.Component {
 
   getQuestionStore = () => {
     const { getQuestion } = this.props;
-    console.log(getQuestion);
     this.setState({
       questionState: getQuestion,
       // numberQuestion: getQuestion.number + 1,
       isFetching: true,
     });
   }
-  
-  // btnClickNextAnswer = () => {
-  //   'FUNÇÃO PRA PEGAR A RESPOSTA CERTA E ALTERAR O CSS DOS COMPONENTES'
-  //                 // 'border-style', 'solid')
-  //                 // 'border-width', '3px')
-  // }
 
   render() {
     const { questionState, isFetching } = this.state;

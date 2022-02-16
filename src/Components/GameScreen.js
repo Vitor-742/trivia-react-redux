@@ -41,7 +41,7 @@ class GameScreen extends React.Component {
       allAnswers.map((answer, index) => {
         if (index === 0) {
           answersWithDataTestId.push({
-            answer, 
+            answer,
             dataTestId: 'correct-answer',
             className: 'correct-answer',
           });
@@ -68,7 +68,6 @@ class GameScreen extends React.Component {
       this.setState({
         Allquestions: questionsReturn.results,
         answers: randomAnswers,
-        // loading: false,
         isFetching: true,
       });
     } else {

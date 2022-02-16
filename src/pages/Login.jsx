@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { fetchTokenApi } from '../services/triviaApi';
+// import { fetchTokenApi } from '../services/triviaApi';
 import { dataLogin, tokenLogin, loginAction } from '../store/actions';
 
 class Login extends React.Component {
@@ -28,15 +28,19 @@ class Login extends React.Component {
     });
   }
 
-  handleClick = async () => {
-    const { loginToken, loginData, getEmail } = this.props;
+  handleClick = () => {
+    const { loginToken, loginData, getEmail, history } = this.props;
     const { emailLogin, usernameLogin } = this.state;
     const dados = { emailLogin, usernameLogin };
     getEmail({ usernameLogin, emailLogin });
-    const tokenApi = await fetchTokenApi();
-    localStorage.setItem('token', tokenApi.token);
-    loginToken(tokenApi.token);
-    loginData(dados);
+    fetch('https://opentdb.com/api_token.php?command=request')
+      .then((response) => response.json())
+      .then((data) => {
+        localStorage.setItem('token', data.token);
+        loginToken(data.token);
+        loginData(dados);
+        history.push('/Game');// apagar comentario
+      });
   }
 
   render() {
@@ -63,16 +67,14 @@ class Login extends React.Component {
             onChange={ this.handleChange }
           />
         </label>
-        <Link to="/Game">
-          <button
-            type="button"
-            disabled={ !btnEnable }
-            data-testid="btn-play"
-            onClick={ this.handleClick }
-          >
-            Play
-          </button>
-        </Link>
+        <button
+          type="button"
+          disabled={ !btnEnable }
+          data-testid="btn-play"
+          onClick={ this.handleClick }
+        >
+          Play
+        </button>
         <Link to="/config">
           <button type="button" data-testid="btn-settings">
             Configurações
