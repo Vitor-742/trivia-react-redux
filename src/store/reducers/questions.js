@@ -1,4 +1,5 @@
 import { DATA_QUESTION } from '../actions';
+
 const INITIAL_STATE = '';
 
 const questionsReducer = (state = INITIAL_STATE, action) => {
