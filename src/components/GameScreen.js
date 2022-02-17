@@ -1,6 +1,7 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
+import md5 from 'crypto-js/md5';
 import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
 import { tokenLogin, dataQuestions } from '../store/actions';
 import AnswerScreen from './AnswerScreen';
@@ -9,6 +10,9 @@ import AnswerScreen from './AnswerScreen';
 const NUMBER_RANDOM = 0.5;
 const RESPONSE_CODE = 3;
 const LAST_QUESTION = 4;
+const POINTS_DIFFICULTY = { hard: 3, medium: 2, easy: 1 };
+const CORRECT_ANSWER = 'correct-answer';
+const NUMBER_TEN = 10;
 
 class GameScreen extends React.Component {
   constructor() {
@@ -42,7 +46,20 @@ class GameScreen extends React.Component {
     }
   }
 
-  btnClickAnswer = () => {
+  btnClickAnswer = ({ target }) => {
+    // Simulação do Timer do Requisito 8;
+    const setTimer = 17;
+    // ^^^^^^^^^^^^^^^^^^
+    const { question, login } = this.props;
+    if (target.name === CORRECT_ANSWER) {
+      const sumScore = NUMBER_TEN + (setTimer * POINTS_DIFFICULTY[question.difficulty]);
+      const hash = md5(login.email).toString();
+      const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
+      const dataPlayer = JSON.stringify(
+        [{ name: login.nome, score: sumScore, url: urlPhoto }],
+      );
+      localStorage.setItem('ranking', dataPlayer);
+    }
     this.setState({
       isAnswer: true,
     });
@@ -61,8 +78,8 @@ class GameScreen extends React.Component {
       if (index === 0) {
         answersWithDataTestId.push({
           answer,
-          dataTestId: 'correct-answer',
-          className: 'correct-answer',
+          dataTestId: CORRECT_ANSWER,
+          className: CORRECT_ANSWER,
         });
         return answersWithDataTestId;
       }
@@ -116,6 +133,7 @@ class GameScreen extends React.Component {
                   <button
                     type="button"
                     key={ index }
+                    name={ dataTestId }
                     data-testid={ dataTestId }
                     onClick={ this.btnClickAnswer }
                   >
@@ -163,6 +181,9 @@ const mapDispatchToProps = (dispatch) => ({
 
 const mapStateToProps = (state) => ({
   tokenState: state.token,
+  question: state.questionsReducer.question,
+  // player: state.player,
+  login: state.login,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameScreen);
