@@ -13,6 +13,11 @@ const player = (state = INITIAL_STATE, action) => {
       name: action.dados.usernameLogin,
       gravatarEmail: action.dados.emailLogin,
     };
+  case 'SCORE_DATA':
+    return {
+      ...state,
+      score: action.payload,
+    };
   default:
     return state;
   }

@@ -3,7 +3,7 @@ import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import md5 from 'crypto-js/md5';
 import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
-import { tokenLogin, dataQuestions } from '../store/actions';
+import { tokenLogin, dataQuestions, scoreData } from '../store/actions';
 import AnswerScreen from './AnswerScreen';
 // import Loading from './Loading'
 
@@ -31,11 +31,23 @@ class GameScreen extends React.Component {
 
   componentDidMount() {
     this.getQuestionsApi();
+    this.timerAnswer();
+  }
 
+  timerAnswer = () => {
     const interval = setInterval(() => {
       this.setState((prevState) => ({ seconds: prevState.seconds - 1 }), () => {
         const { seconds } = this.state;
-        if (seconds === TIMER_MIN) clearInterval(interval);
+        const { login } = this.props;
+        if (seconds === TIMER_MIN) {
+          clearInterval(interval);
+          const hash = md5(login.email).toString();
+          const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
+          const dataPlayer = JSON.stringify(
+            [{ name: login.nome, score: 0, url: urlPhoto }],
+          );
+          localStorage.setItem('ranking', dataPlayer);
+        }
       });
     }, TIME_OUT);
   }
@@ -95,11 +107,13 @@ class GameScreen extends React.Component {
 
   btnClickAnswer = ({ target }) => {
     const { seconds } = this.state;
-    const { question, login } = this.props;
+    console.log(seconds);
+    const { question, login, inputScoreData } = this.props;
     if (target.name === CORRECT_ANSWER) {
       const sumScore = NUMBER_TEN + (seconds * POINTS_DIFFICULTY[question.difficulty]);
       const hash = md5(login.email).toString();
       const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
+      inputScoreData(sumScore);
       const dataPlayer = JSON.stringify(
         [{ name: login.nome, score: sumScore, url: urlPhoto }],
       );
@@ -132,7 +146,7 @@ class GameScreen extends React.Component {
                   <button
                     type="button"
                     key={ index }
-                    className={ seconds === TIMER_MIN && 'wrong-answer' }
+                    className={ seconds === TIMER_MIN ? 'wrong-answer' : '' }
                     disabled={ seconds === TIMER_MIN }
                     name={ dataTestId }
                     data-testid={ dataTestId }
@@ -152,11 +166,13 @@ GameScreen.propTypes = {
   tokenState: propTypes.string,
   loginToken: propTypes.func,
   inputQuestionsStore: propTypes.func,
+  inputScoreData: propTypes.func,
 }.isRequired;
 
 const mapDispatchToProps = (dispatch) => ({
   loginToken: (token) => dispatch(tokenLogin(token)),
   inputQuestionsStore: (questionsApi) => dispatch(dataQuestions(questionsApi)),
+  inputScoreData: (score) => dispatch(scoreData(score)),
 });
 
 const mapStateToProps = (state) => ({
