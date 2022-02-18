@@ -13,6 +13,12 @@ const player = (state = INITIAL_STATE, action) => {
       name: action.dados.usernameLogin,
       gravatarEmail: action.dados.emailLogin,
     };
+  case 'NEW_POINT':
+    return {
+      ...state,
+      score: action.point.score,
+      assertions: action.point.assertions,
+    };
   default:
     return state;
   }

@@ -3,7 +3,7 @@ import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import md5 from 'crypto-js/md5';
 import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
-import { tokenLogin, dataQuestions } from '../store/actions';
+import { tokenLogin, dataQuestions, pointNew } from '../store/actions';
 import AnswerScreen from './AnswerScreen';
 // import Loading from './Loading'
 
@@ -44,7 +44,7 @@ class GameScreen extends React.Component {
   getQuestionsApi = async () => {
     const { tokenState } = this.props;
     const questionsReturn = await fetchQuestionsApi(tokenState);
-    console.log(questionsReturn); // Se o TOKEN expirar, a API retorna um RESPONSE_CODE = 3 -> no else é solicitando um novo TOKEN
+    // Se o TOKEN expirar, a API retorna um RESPONSE_CODE = 3 -> no else é solicitando um novo TOKEN
     if (questionsReturn.response_code !== RESPONSE_CODE) {
       this.sortAndPostQuestions(questionsReturn);
     } else {
@@ -58,15 +58,20 @@ class GameScreen extends React.Component {
 
   btnClickAnswer = ({ target }) => {
     const { seconds } = this.state;
-    const { question, login } = this.props;
+    const { question, login, player, newPoint } = this.props;
+    console.log(player);
     if (target.name === CORRECT_ANSWER) {
       const sumScore = NUMBER_TEN + (seconds * POINTS_DIFFICULTY[question.difficulty]);
       const hash = md5(login.email).toString();
       const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
-      const dataPlayer = JSON.stringify(
-        [{ name: login.nome, score: sumScore, url: urlPhoto }],
-      );
-      localStorage.setItem('ranking', dataPlayer);
+      const dataPlayer = { name: login.nome, score: sumScore, url: urlPhoto };
+      let lastRanking = [];
+      if (localStorage.getItem('ranking')) {
+        lastRanking = JSON.parse(localStorage.getItem('ranking'));
+      }
+      const dataPlayerStr = JSON.stringify([...lastRanking, dataPlayer]);
+      localStorage.setItem('ranking', dataPlayerStr);
+      newPoint({ score: player.score + sumScore, assertions: player.assertions + 1 });
     }
     this.setState({
       isAnswer: true,
@@ -162,10 +167,11 @@ class GameScreen extends React.Component {
             type="button"
             data-testid="btn-next"
             onClick={ () => {
-              if (numberQuestion === LAST_QUESTION) history.push('/feedback');// colocar no elemento pai
+              if (numberQuestion === LAST_QUESTION) history.push('/feedback');
               else {
                 this.setState(() => {
                   this.setState({
+                    seconds: 30,
                     numberQuestion: numberQuestion + 1,
                     isAnswer: false,
                   });
@@ -190,6 +196,7 @@ GameScreen.propTypes = {
 }.isRequired;
 
 const mapDispatchToProps = (dispatch) => ({
+  newPoint: (point) => dispatch(pointNew(point)),
   loginToken: (token) => dispatch(tokenLogin(token)),
   inputQuestionsStore: (questionsApi) => dispatch(dataQuestions(questionsApi)),
 });
@@ -197,7 +204,7 @@ const mapDispatchToProps = (dispatch) => ({
 const mapStateToProps = (state) => ({
   tokenState: state.token,
   question: state.questionsReducer.question,
-  // player: state.player,
+  player: state.player,
   login: state.login,
 });
 
