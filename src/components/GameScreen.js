@@ -5,7 +5,7 @@ import md5 from 'crypto-js/md5';
 import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
 import { tokenLogin, dataQuestions } from '../store/actions';
 import AnswerScreen from './AnswerScreen';
-// import Loading from './Loading';
+// import Loading from './Loading'
 
 const NUMBER_RANDOM = 0.5;
 const RESPONSE_CODE = 3;
