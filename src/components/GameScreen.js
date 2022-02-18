@@ -5,13 +5,15 @@ import md5 from 'crypto-js/md5';
 import { fetchQuestionsApi, fetchTokenApi } from '../services/triviaApi';
 import { tokenLogin, dataQuestions } from '../store/actions';
 import AnswerScreen from './AnswerScreen';
-// import Loading from './Loading';
+// import Loading from './Loading'
 
 const NUMBER_RANDOM = 0.5;
 const RESPONSE_CODE = 3;
 const POINTS_DIFFICULTY = { hard: 3, medium: 2, easy: 1 };
 const CORRECT_ANSWER = 'correct-answer';
 const NUMBER_TEN = 10;
+const TIME_OUT = 1000;
+const TIMER_MIN = 0;
 
 class GameScreen extends React.Component {
   constructor() {
@@ -23,11 +25,19 @@ class GameScreen extends React.Component {
       // loading: true,
       isFetching: false,
       isAnswer: false,
+      seconds: 30,
     };
   }
 
   componentDidMount() {
     this.getQuestionsApi();
+
+    const interval = setInterval(() => {
+      this.setState((prevState) => ({ seconds: prevState.seconds - 1 }), () => {
+        const { seconds } = this.state;
+        if (seconds === TIMER_MIN) clearInterval(interval);
+      });
+    }, TIME_OUT);
   }
 
   getQuestionsApi = async () => {
@@ -84,12 +94,10 @@ class GameScreen extends React.Component {
   }
 
   btnClickAnswer = ({ target }) => {
-    // Simulação do Timer do Requisito 8;
-    const setTimer = 17;
-    // ^^^^^^^^^^^^^^^^^^
+    const { seconds } = this.state;
     const { question, login } = this.props;
     if (target.name === CORRECT_ANSWER) {
-      const sumScore = NUMBER_TEN + (setTimer * POINTS_DIFFICULTY[question.difficulty]);
+      const sumScore = NUMBER_TEN + (seconds * POINTS_DIFFICULTY[question.difficulty]);
       const hash = md5(login.email).toString();
       const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
       const dataPlayer = JSON.stringify(
@@ -103,21 +111,29 @@ class GameScreen extends React.Component {
   }
 
   render() {
-    const { Allquestions, numberQuestion, isFetching, answers, isAnswer } = this.state;
+    const {
+      Allquestions,
+      numberQuestion, isFetching, answers, isAnswer, seconds } = this.state;
     return (
       <main>
         {isFetching && (
           isAnswer ? <AnswerScreen /> : (
             <div>
+              <p>
+                { seconds }
+              </p>
               <h2 data-testid="question-category">
                 {Allquestions[numberQuestion].category}
               </h2>
               <h1 data-testid="question-text">{Allquestions[numberQuestion].question}</h1>
               <div data-testid="answer-options">
                 {answers.map(({ answer, dataTestId }, index) => (
+                  // seconds === TIMER_MIN ?
                   <button
                     type="button"
                     key={ index }
+                    className={ seconds === TIMER_MIN && 'wrong-answer' }
+                    disabled={ seconds === TIMER_MIN }
                     name={ dataTestId }
                     data-testid={ dataTestId }
                     onClick={ this.btnClickAnswer }

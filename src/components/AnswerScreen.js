@@ -65,8 +65,9 @@ const mapDispatchToProps = (dispatch) => ({
   inputQuestionsStore: (questionsApi) => dispatch(dataQuestions(questionsApi)),
 });
 
-const mapStateToProps = ({ questionsReducer }) => ({
-  getQuestion: questionsReducer,
+const mapStateToProps = (state) => ({
+
+  getQuestion: state.questionsReducer,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AnswerScreen);
