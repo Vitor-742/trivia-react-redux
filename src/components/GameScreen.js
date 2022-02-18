@@ -42,7 +42,7 @@ class GameScreen extends React.Component {
   }
 
   getQuestionsApi = async () => {
-    const { tokenState, login } = this.props;
+    const { tokenState } = this.props;
     const questionsReturn = await fetchQuestionsApi(tokenState);
     // Se o TOKEN expirar, a API retorna um RESPONSE_CODE = 3 -> no else é solicitando um novo TOKEN
     if (questionsReturn.response_code !== RESPONSE_CODE) {
