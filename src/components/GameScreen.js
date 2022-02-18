@@ -42,7 +42,7 @@ class GameScreen extends React.Component {
   }
 
   getQuestionsApi = async () => {
-    const { tokenState } = this.props;
+    const { tokenState, login } = this.props;
     const questionsReturn = await fetchQuestionsApi(tokenState);
     // Se o TOKEN expirar, a API retorna um RESPONSE_CODE = 3 -> no else é solicitando um novo TOKEN
     if (questionsReturn.response_code !== RESPONSE_CODE) {
@@ -57,18 +57,27 @@ class GameScreen extends React.Component {
   }
 
   btnClickAnswer = ({ target }) => {
-    const { seconds } = this.state;
+    const { seconds, numberQuestion } = this.state;
     const { question, login, player, newPoint } = this.props;
-    console.log(player);
     if (target.name === CORRECT_ANSWER) {
       const sumScore = NUMBER_TEN + (seconds * POINTS_DIFFICULTY[question.difficulty]);
       const hash = md5(login.email).toString();
       const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
-      const dataPlayer = { name: login.nome, score: sumScore, url: urlPhoto };
       let lastRanking = [];
       if (localStorage.getItem('ranking')) {
         lastRanking = JSON.parse(localStorage.getItem('ranking'));
+        const lastPlay = lastRanking
+          .find((lastPlayer) => lastPlayer.name === login.nome);
+        console.log(numberQuestion);
+        lastRanking = lastRanking.filter((item) => item !== lastPlay);
+        console.log(lastPlay);
+        console.log(lastRanking);
+        console.log(player.score);
       }
+      const dataPlayer = {
+        name: login.nome,
+        score: sumScore + player.score,
+        url: urlPhoto };
       const dataPlayerStr = JSON.stringify([...lastRanking, dataPlayer]);
       localStorage.setItem('ranking', dataPlayerStr);
       newPoint({ score: player.score + sumScore, assertions: player.assertions + 1 });

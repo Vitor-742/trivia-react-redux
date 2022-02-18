@@ -16,7 +16,6 @@ class Ranking extends React.Component {
   organizaRanking() { // obs: verificar se as infomacoes do player atual ja chegam aq no localStorage
     const rankingLS = JSON.parse(localStorage.getItem('ranking'));
     const rankingOrdenado = rankingLS.sort((a, b) => b.score - a.score);
-    console.log(rankingOrdenado);
     this.setState({
       rankingOrdenado,
     });
@@ -30,7 +29,7 @@ class Ranking extends React.Component {
         <section>
           {rankingOrdenado.map((player, index) => (
             <div key={ player.name }>
-              <img alt="foto-player" src={ player.picture } />
+              <img alt="foto-player" src={ player.url } />
               <p data-testid={ `player-name-${index}` }>{player.name}</p>
               <p data-testid={ `player-score-${index}` }>{player.score}</p>
             </div>))}

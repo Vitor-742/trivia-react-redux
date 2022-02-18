@@ -9,7 +9,8 @@ const player = (state = INITIAL_STATE, action) => {
   switch (action.type) {
   case 'LOGIN_DATA':
     return {
-      ...state,
+      score: 0,
+      assertions: 0,
       name: action.dados.usernameLogin,
       gravatarEmail: action.dados.emailLogin,
     };
@@ -18,6 +19,10 @@ const player = (state = INITIAL_STATE, action) => {
       ...state,
       score: action.point.score,
       assertions: action.point.assertions,
+      /* case 'SCORE_DATA':
+    return {
+      ...state,
+      score: action.payload, */
     };
   default:
     return state;
