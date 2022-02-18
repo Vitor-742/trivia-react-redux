@@ -94,13 +94,10 @@ class GameScreen extends React.Component {
   }
 
   btnClickAnswer = ({ target }) => {
-    // Simulação do Timer do Requisito 8;
-    const setTimer = 17;
-    // ^^^^^^^^^^^^^^^^^^
+    const { seconds } = this.state;
     const { question, login } = this.props;
-    console.log(target);
     if (target.name === CORRECT_ANSWER) {
-      const sumScore = NUMBER_TEN + (setTimer * POINTS_DIFFICULTY[question.difficulty]);
+      const sumScore = NUMBER_TEN + (seconds * POINTS_DIFFICULTY[question.difficulty]);
       const hash = md5(login.email).toString();
       const urlPhoto = `https://www.gravatar.com/avatar/${hash}`;
       const dataPlayer = JSON.stringify(
